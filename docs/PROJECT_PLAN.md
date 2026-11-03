@@ -10,7 +10,9 @@ These decisions were supplied by the project owner and guide the initial impleme
 | Initial model strategy | **C: Both** | Investigate published weight-space edit reproduction and a small-model abliteration target. Start with whichever has the cleanest reproducible setup, while keeping both tracks active. |
 | Opus workflow | **C: Staged automation** | Begin manually supervised, then automate proposal and evaluation after the protocol is validated. |
 | API budget | **C: Research-first** | Useful experiments take priority over minimizing spend. Still record token usage and cost estimates, and surface expensive runs before execution. |
-| Environment | **Linux** | Linux is the target development environment. Distribution and exact Python/CUDA versions remain to be confirmed. |
+| Environment | **CachyOS / Arch Linux** | Linux is the target environment. Confirm exact driver, Python, and PyTorch/CUDA setup before installing dependencies. |
+| External model access | **Claude Ultra subscription + $200/month API budget** | Use the subscription for interactive research where suitable; use API access for repeatable harness calls. Verify current API model identifiers and pricing before automating. |
+| Storage | **Local disk is limited** | Keep code and metadata local; download only the first model needed. Evaluate remote model storage and on-demand cloud GPU compute only when an experiment requires them. |
 | Additional notes | None | No further constraints supplied. |
 
 ## Mission
@@ -33,6 +35,7 @@ The longer-term goal is to unify these experiments under a general-purpose frame
 4. Can an external coding/reasoning model propose edits that survive a fixed evaluation suite?
 5. Can we make this workflow practical on a consumer machine with 8 GB VRAM and 64 GB system RAM?
 6. Which parts of the workflow can be automated reliably without compromising reproducibility or experimental control?
+7. Which artifacts should be local, remotely stored, or generated on ephemeral cloud compute to minimize disk pressure and unnecessary spending?
 
 ## Tracks and priorities
 
@@ -71,6 +74,15 @@ The longer-term goal is to unify these experiments under a general-purpose frame
 - Consider more autonomous iteration only after the harness demonstrates reliable evaluation and rollback.
 - Record external-model token usage and cost estimates. Research is prioritized over strict cost minimization, but expensive runs should be visible before they are launched.
 
+### P1: Storage and compute strategy
+- Keep source code, configuration, experiment metadata, compact logs, and evaluation summaries in the GitHub repository.
+- Never commit model weights, large generated checkpoints, API keys, or private credentials to the code repository.
+- Download only the model required for the current experiment; delete reproducible caches and temporary candidates after confirming that important artifacts are preserved.
+- Prefer public model hubs for canonical source checkpoints rather than uploading duplicates.
+- For large temporary workloads, compare the cost of cloud storage alone against a cloud GPU with attached storage. Shut down compute when not actively using it.
+- Before any cloud run, estimate model download size, storage charges, GPU hourly cost, data-transfer requirements, and artifact retrieval plan.
+- Do not rent cloud compute until a concrete experiment exceeds local disk, RAM, or VRAM limits.
+
 ### P1: Generalization
 - Repeat promising experiments on another model or task.
 - Use held-out prompts to reduce benchmark overfitting.
@@ -92,14 +104,14 @@ Target system:
 - Ryzen 7 5800X
 - RTX 3070 8 GB VRAM
 - 64 GB RAM
-- Linux
+- CachyOS / Arch Linux
 
 Still to confirm:
-- Linux distribution and kernel.
-- NVIDIA driver and CUDA runtime/toolkit.
+- Kernel and NVIDIA driver.
 - Python version and environment manager.
 - PyTorch build and supported CUDA version.
 - Available disk space for source and candidate checkpoints.
+- Whether the system has a separate disk or external drive suitable for temporary model files.
 
 Plan around the distinction between:
 - **Editing:** usually best performed on original floating-point checkpoint tensors, with CPU RAM as an option.

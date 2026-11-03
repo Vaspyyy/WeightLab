@@ -1,14 +1,29 @@
 # WeightLab Project Plan
 
+## Agreed project decisions
+
+These decisions were supplied by the project owner and guide the initial implementation.
+
+| Decision | Selection | Implementation consequence |
+|---|---|---|
+| Endgame | **C: Both** | Abliteration and capability-oriented weight modification are both core tracks; long-term direction is a general-purpose weight manipulation research framework. |
+| Initial model strategy | **C: Both** | Investigate published weight-space edit reproduction and a small-model abliteration target. Start with whichever has the cleanest reproducible setup, while keeping both tracks active. |
+| Opus workflow | **C: Staged automation** | Begin manually supervised, then automate proposal and evaluation after the protocol is validated. |
+| API budget | **C: Research-first** | Useful experiments take priority over minimizing spend. Still record token usage and cost estimates, and surface expensive runs before execution. |
+| Environment | **Linux** | Linux is the target development environment. Distribution and exact Python/CUDA versions remain to be confirmed. |
+| Additional notes | None | No further constraints supplied. |
+
 ## Mission
 
-Build a small, reproducible research framework for modifying open-weight language models and testing what the modifications actually change.
+Build a reproducible research framework for modifying open-weight language models and testing what the modifications actually change.
 
-The immediate motivation is twofold:
+The project has two initial experimental pillars:
 1. Investigate refusal-behaviour modification (commonly called abliteration).
 2. Investigate weight-space programming, where a capable external model proposes targeted changes to a model's weights.
 
 These are separate techniques and should have separate experiment tracks. A successful abliteration result does not establish general capability improvement, and a successful narrow weight-space edit does not establish recursive self-improvement.
+
+The longer-term goal is to unify these experiments under a general-purpose framework for controlled weight manipulation, evaluation, and checkpoint management.
 
 ## Research questions
 
@@ -17,6 +32,7 @@ These are separate techniques and should have separate experiment tracks. A succ
 3. What general-capability regressions, if any, accompany that change?
 4. Can an external coding/reasoning model propose edits that survive a fixed evaluation suite?
 5. Can we make this workflow practical on a consumer machine with 8 GB VRAM and 64 GB system RAM?
+6. Which parts of the workflow can be automated reliably without compromising reproducibility or experimental control?
 
 ## Tracks and priorities
 
@@ -42,11 +58,18 @@ These are separate techniques and should have separate experiment tracks. A succ
 - Keep the original checkpoint immutable.
 
 ### P1: Model-proposed weight editing
-- Let an external model inspect architecture metadata and evaluation failures.
+- Initially, use a manually supervised workflow with Opus 5.5 as the proposed external reasoning/editor model.
+- Give the model architecture metadata, clearly scoped task information, and evaluation findings rather than unrestricted access to the machine.
 - Require proposals to state a hypothesis, affected tensors, expected effect, risks, and a rollback plan.
 - Execute proposed edits in a constrained Python process.
 - Reject malformed, non-finite, or out-of-budget modifications.
 - Run evaluation before promoting any candidate checkpoint.
+
+### P1: Progressive automation
+- First automate deterministic operations: checkpoint inspection, validation, evaluation, result comparison, and artifact logging.
+- Next automate bounded proposal/evaluation cycles with human approval gates.
+- Consider more autonomous iteration only after the harness demonstrates reliable evaluation and rollback.
+- Record external-model token usage and cost estimates. Research is prioritized over strict cost minimization, but expensive runs should be visible before they are launched.
 
 ### P1: Generalization
 - Repeat promising experiments on another model or task.
@@ -55,9 +78,11 @@ These are separate techniques and should have separate experiment tracks. A succ
 
 ## Initial model selection
 
-Preferred first target: a small, conventional architecture supported by Transformers/PyTorch and by the selected evaluation tooling.
+The owner selected a dual-track strategy: investigate both a published weight-space programming reproduction and a small-model abliteration experiment. The first runnable experiment should be whichever has the clearest source artifacts, architecture support, and evaluation procedure. Do not abandon the other track; keep its preparation moving in parallel where practical.
 
 A published Qwen experiment may be the easiest reproduction target if its original checkpoint and exact edit artifacts are available. However, verify its architecture rather than assuming it is a conventional dense transformer. Architecture complexity is a reason to defer a model, not to silently substitute a different one.
+
+For the abliteration track, choose a small model with reliable activation extraction and checkpoint tooling. Record why it was selected before running edits.
 
 LFM3 1.7B Q4 is the user's current fast local model and should remain untouched initially. Its hybrid architecture and quantized format make it a poor first target for generic tensor-editing experiments.
 
@@ -67,7 +92,14 @@ Target system:
 - Ryzen 7 5800X
 - RTX 3070 8 GB VRAM
 - 64 GB RAM
-- Linux preferred
+- Linux
+
+Still to confirm:
+- Linux distribution and kernel.
+- NVIDIA driver and CUDA runtime/toolkit.
+- Python version and environment manager.
+- PyTorch build and supported CUDA version.
+- Available disk space for source and candidate checkpoints.
 
 Plan around the distinction between:
 - **Editing:** usually best performed on original floating-point checkpoint tensors, with CPU RAM as an option.

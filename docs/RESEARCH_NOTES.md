@@ -1,6 +1,15 @@
 # Research Notes
 
-This document captures current assumptions and open questions. Update it as evidence changes.
+This document captures current assumptions, owner decisions, and open questions. Update it as evidence changes.
+
+## Owner decisions
+
+- Endgame: pursue both abliteration and capability-oriented weight modification, eventually building a general-purpose weight manipulation framework.
+- Initial model strategy: investigate both published weight-space edit reproduction and a small-model abliteration target; start with the clearest reproducible experiment.
+- Opus workflow: start manually supervised and progressively automate after the method and evaluation harness are validated.
+- API budget: research-first, with usage and estimated costs recorded and expensive runs surfaced before execution.
+- Environment: Linux.
+- Additional notes: none supplied.
 
 ## Abliteration versus weight-space programming
 
@@ -22,6 +31,20 @@ Before claiming reproduction, verify:
 - Matching tokenizer and inference settings.
 - Matching benchmark and scoring procedure.
 - Whether the reported result depends on a particular prompt format or stopping condition.
+
+## Staged Opus workflow
+
+The initial external-model workflow is human-supervised:
+1. Provide Opus 5.5 with scoped architecture metadata, experiment context, and relevant evaluation findings.
+2. Ask for a falsifiable modification proposal and explicit expected effects.
+3. Review the proposed code and tensor changes.
+4. Execute in a constrained environment against a copied checkpoint.
+5. Run the fixed evaluation suite and inspect regressions.
+6. Record the outcome and cost before deciding on another iteration.
+
+Automation should be introduced incrementally. Deterministic inspection, validation, evaluation, and logging are good early automation targets. Autonomous proposal/edit loops come later, once rollback and evaluation are dependable.
+
+The project is research-first rather than strictly cost-minimizing. Still, record model, API, token usage, and estimated spend per experiment. Surface unusually expensive runs before starting them.
 
 ## Weight editing safety rails
 
@@ -49,8 +72,8 @@ Model-generated code should be reviewed and run in a constrained environment. Tr
 ## Open questions
 
 1. Which released experiment is easiest to reproduce exactly with accessible artifacts?
-2. Which small model has the best combination of architecture simplicity, checkpoint access, and evaluation support?
+2. Which small model has the best combination of architecture simplicity, checkpoint access, and evaluation support for abliteration?
 3. Which refusal and general-capability evaluation sets should be included in the first abliteration run?
-4. How should the project invoke Opus 5.5: manual copy/paste initially, or a programmatic API harness once the experimental protocol is stable?
-5. What is the acceptable API spend per iteration?
-6. Which Linux distribution and Python/CUDA environment will be used for the actual run?
+4. Which Linux distribution, Python version, NVIDIA driver, CUDA/PyTorch stack, and environment manager are installed?
+5. What API interface will be used for Opus 5.5, and how should usage/cost be captured?
+6. What disk budget is available for source checkpoints, candidate checkpoints, and evaluation artifacts?

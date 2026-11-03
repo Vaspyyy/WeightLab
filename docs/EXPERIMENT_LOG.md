@@ -10,6 +10,19 @@ This file records completed and attempted experiments. Planned work belongs in [
 - **FAILED:** execution failed for a technical reason
 - **INCONCLUSIVE:** execution completed, but the evidence does not answer the question
 
+## DEC-001: Initial project direction
+
+- **Status:** RECORDED
+- **Date:** 2026-11-03
+- **Endgame:** both abliteration and capability-oriented weight modification, eventually a general-purpose weight manipulation framework.
+- **Initial model strategy:** investigate published weight-space programming reproduction and small-model abliteration; start with the cleanest reproducible setup.
+- **Opus workflow:** begin manually supervised, then progressively automate.
+- **API budget:** research-first; record usage/cost and surface expensive runs before execution.
+- **Environment:** Linux.
+- **Additional notes:** none supplied.
+- **Model changes:** none.
+- **Evaluation:** none.
+
 ## EXP-000: Repository initialization
 
 - **Status:** COMPLETE
